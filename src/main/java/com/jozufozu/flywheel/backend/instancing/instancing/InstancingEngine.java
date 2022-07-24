@@ -78,21 +78,25 @@ public class InstancingEngine<P extends WorldProgram> implements Engine {
 		double camY;
 		double camZ;
 		Matrix4f viewProjection;
+		Matrix4f view;
 		if (!ignoreOriginCoordinate) {
 			camX = event.camX - originCoordinate.getX();
 			camY = event.camY - originCoordinate.getY();
 			camZ = event.camZ - originCoordinate.getZ();
 
 			viewProjection = Matrix4f.createTranslateMatrix((float) -camX, (float) -camY, (float) -camZ);
+			view = Matrix4f.createTranslateMatrix((float) -camX, (float) -camY, (float) -camZ);
 			Matrix4fHelper.multiplyBackward(viewProjection, event.viewProjection);
+			Matrix4fHelper.multiplyBackward(view, event.view);
 		} else {
 			camX = event.camX;
 			camY = event.camY;
 			camZ = event.camZ;
 			viewProjection = event.viewProjection;
+			view = event.view;
 		}
 
-		getGroupsToRender(event.getLayer()).forEach(group -> group.render(viewProjection, camX, camY, camZ, event.getLayer()));
+		getGroupsToRender(event.getLayer()).forEach(group -> group.render(viewProjection, view, camX, camY, camZ, event.getLayer()));
 	}
 
 	private Stream<InstancedMaterialGroup<P>> getGroupsToRender(@Nullable RenderLayer layer) {

@@ -19,7 +19,7 @@ public class CrumblingGroup<P extends CrumblingProgram> extends InstancedMateria
 	}
 
 	@Override
-	public void render(Matrix4f viewProjection, double camX, double camY, double camZ, RenderLayer layer) {
+	public void render(Matrix4f viewProjection, Matrix4f view, double camX, double camY, double camZ, RenderLayer layer) {
 		type.setupRenderState();
 
 		int renderTex = RenderSystem.getShaderTexture(0);
@@ -36,7 +36,7 @@ public class CrumblingGroup<P extends CrumblingProgram> extends InstancedMateria
 		RenderSystem.setShaderTexture(4, breakingTex);
 
 		Textures.bindActiveTextures();
-		renderAll(viewProjection, camX, camY, camZ, layer);
+		renderAll(viewProjection, view, camX, camY, camZ, layer);
 
 		CrumblingRenderer._currentLayer.clearRenderState();
 	}

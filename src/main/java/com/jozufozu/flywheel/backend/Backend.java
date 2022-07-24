@@ -93,7 +93,7 @@ public class Backend {
 	}
 
 	private static BackendType chooseEngine() {
-		BackendType preferredChoice = FlwConfig.get()
+		/*BackendType preferredChoice = FlwConfig.get()
 				.getBackendType();
 
 		boolean usingShaders = ShadersModHandler.isShaderPackInUse();
@@ -103,7 +103,10 @@ public class Backend {
 			case INSTANCING -> !usingShaders && GlCompat.getInstance().instancedArraysSupported();
 		};
 
-		return canUseEngine ? preferredChoice : BackendType.OFF;
+		return canUseEngine ? preferredChoice : BackendType.OFF;*/
+
+		// yolo
+		return BackendType.INSTANCING;
 	}
 
 	public static void init() {

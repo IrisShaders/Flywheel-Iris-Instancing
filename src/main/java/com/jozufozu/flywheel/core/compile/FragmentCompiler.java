@@ -37,6 +37,8 @@ public class FragmentCompiler extends Memoizer<FragmentCompiler.Context, GlShade
 
 		builder.append(appliedTemplate.generateFooter());
 
+		System.out.println("Final FLW fragment source: \n" + builder.toString());
+
 		return new GlShader(fragmentFile.name, ShaderType.FRAGMENT, builder.toString());
 	}
 

@@ -18,6 +18,9 @@ import com.jozufozu.flywheel.core.shader.WorldProgram;
 import com.jozufozu.flywheel.util.Textures;
 import com.mojang.math.Matrix4f;
 
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.pipeline.newshader.FlwProgram;
+import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.client.renderer.RenderType;
 
 /**
@@ -68,14 +71,15 @@ public class InstancedMaterialGroup<P extends WorldProgram> implements MaterialG
 		return vertexCount;
 	}
 
-	public void render(Matrix4f viewProjection, double camX, double camY, double camZ, RenderLayer layer) {
+	public void render(Matrix4f viewProjection, Matrix4f view, double camX, double camY, double camZ, RenderLayer layer) {
 		type.setupRenderState();
+		// TODO: Replace eventually in iris?
 		Textures.bindActiveTextures();
-		renderAll(viewProjection, camX, camY, camZ, layer);
+		renderAll(viewProjection, view, camX, camY, camZ, layer);
 		type.clearRenderState();
 	}
 
-	protected void renderAll(Matrix4f viewProjection, double camX, double camY, double camZ, RenderLayer layer) {
+	protected void renderAll(Matrix4f viewProjection, Matrix4f view, double camX, double camY, double camZ, RenderLayer layer) {
 		initializeInstancers();
 
 		vertexCount = 0;
@@ -85,14 +89,34 @@ public class InstancedMaterialGroup<P extends WorldProgram> implements MaterialG
 			InstancedMaterial<?> material = entry.getValue();
 			if (material.nothingToRender()) continue;
 
-			P program = owner.context.getProgram(ProgramContext.create(entry.getKey()
-					.getProgramSpec(), Formats.POS_TEX_NORMAL, layer));
+			FlwProgram irisOverride = Iris.getPipelineManager().getPipeline().map(p -> {
+				if (IrisApi.getInstance().isRenderingShadowPass()) {
+					if (layer == RenderLayer.CUTOUT) {
+						return p.getShadowCutoutFlwProgram();
+					} else {
+						return p.getShadowFlwProgram();
+					}
+				} else {
+					if (layer == RenderLayer.CUTOUT) {
+						return p.getTerrainCutoutFlwProgram();
+					} else {
+						return p.getTerrainFlwProgram();
+					}
+				}
+			}).orElse(null);
 
-			program.bind();
-			program.uploadViewProjection(viewProjection);
-			program.uploadCameraPos(camX, camY, camZ);
+			if (irisOverride != null) {
+				irisOverride.bind(viewProjection, view);
+			} else {
+				P program = owner.context.getProgram(ProgramContext.create(entry.getKey()
+						.getProgramSpec(), Formats.POS_TEX_NORMAL, layer));
 
-			setup(program);
+				program.bind();
+				program.uploadViewProjection(viewProjection);
+				program.uploadCameraPos(camX, camY, camZ);
+
+				setup(program);
+			}
 
 			for (GPUInstancer<?> instancer : material.getAllInstancers()) {
 				instancer.render();

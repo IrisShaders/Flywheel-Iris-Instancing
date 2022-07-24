@@ -17,6 +17,7 @@ public class RenderLayerEvent extends EventContext {
 	private final ClientLevel world;
 	public final RenderType type;
 	public final PoseStack stack;
+	public final Matrix4f view;
 	public final Matrix4f viewProjection;
 	public final RenderBuffers buffers;
 	public final double camX;
@@ -29,6 +30,9 @@ public class RenderLayerEvent extends EventContext {
 		this.type = type;
 		this.stack = stack;
 
+		view = stack.last()
+				.pose()
+				.copy();
 		viewProjection = stack.last()
 				.pose()
 				.copy();

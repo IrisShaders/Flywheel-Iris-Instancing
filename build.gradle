@@ -20,6 +20,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 repositories {
+    mavenLocal()
     maven {
         url 'https://www.cursemaven.com'
         content {
@@ -63,8 +64,10 @@ dependencies {
 
     modCompileOnly 'curse.maven:starlight-521783:3667443'
 
-    modCompileOnly 'maven.modrinth:iris:1.18.x-v1.2.5'
-    modCompileOnly 'maven.modrinth:sodium:mc1.18.2-0.4.1'
+    implementation "org.joml:joml:1.10.2"
+    implementation "org.anarres:jcpp:1.4.14"
+    modImplementation 'net.coderbot.iris_mc1_18_2:iris:diewheel9'
+    modImplementation 'maven.modrinth:sodium:mc1.18.2-0.4.1'
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     modCompileOnly 'maven.modrinth:indium:1.0.6+mc1.18.2'

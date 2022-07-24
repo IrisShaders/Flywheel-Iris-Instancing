@@ -49,6 +49,8 @@ public class VertexCompiler extends Memoizer<VertexCompiler.Context, GlShader> {
 		VertexData appliedTemplate = template.apply(key.file);
 		finalSource.append(appliedTemplate.generateFooter(index, key.vertexType));
 
+		System.out.println("Final FLW vertex source: \n" + finalSource);
+
 		return new GlShader(key.file.name, ShaderType.VERTEX, finalSource.toString());
 	}
 
